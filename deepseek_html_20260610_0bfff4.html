@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+  <title>Тамбовщина. Сейчас</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue-router@4"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f2ee;
+      color: #1a1a1a;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
+
+    /* Шапка */
+    .header {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      position: sticky; top: 0; z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; padding: 14px 0; gap: 18px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 1.4rem; color: #1e3a5f; letter-spacing: -0.3px;
+    }
+    .logo svg { height: 38px; width: 38px; }
+    .nav { display: flex; gap: 24px; font-weight: 500; flex-wrap: wrap; }
+    .nav a {
+      color: #444; transition: color 0.2s; white-space: nowrap;
+      font-size: 0.95rem; padding: 6px 0; border-bottom: 2px solid transparent;
+    }
+    .nav a.router-link-active, .nav a:hover { color: #b13e3e; border-bottom-color: #b13e3e; }
+    .search-box { position: relative; min-width: 260px; flex: 1; max-width: 380px; }
+    .search-box input {
+      width: 100%; padding: 10px 16px; border: 1px solid #e0ded9;
+      border-radius: 28px; font-size: 0.95rem; background: #fff;
+      transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .search-box input:focus { outline: none; border-color: #b13e3e; box-shadow: 0 4px 14px rgba(177,62,62,0.12); }
+    .suggestions {
+      position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+      background: #fff; border: 1px solid #eee; border-radius: 16px;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.08); z-index: 2000;
+      max-height: 360px; overflow-y: auto; padding: 6px 0;
+    }
+    .suggestion-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+      cursor: pointer; transition: background 0.15s;
+    }
+    .suggestion-item:hover { background: #f8f6f2; }
+    .suggestion-item img { width: 44px; height: 44px; object-fit: cover; border-radius: 10px; background: #eee; }
+    .suggestion-item .info { flex: 1; }
+    .suggestion-item .title { font-weight: 600; font-size: 0.9rem; color: #222; }
+    .suggestion-item .desc { font-size: 0.8rem; color: #777; line-height: 1.3; }
+    .suggestion-item .badge {
+      font-size: 0.7rem; background: #c3e6cb; color: #155724;
+      padding: 3px 10px; border-radius: 14px; margin-left: 8px; white-space: nowrap; font-weight: 500;
+    }
+
+    /* Лента и карточки */
+    .feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; padding: 30px 0; }
+    .fact-card {
+      background: #fff; border-radius: 20px; overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04); transition: transform 0.25s, box-shadow 0.25s;
+      display: flex; flex-direction: column;
+    }
+    .fact-card:hover { transform: translateY(-6px); box-shadow: 0 18px 32px rgba(0,0,0,0.08); }
+    .fact-card img { width: 100%; height: 210px; object-fit: cover; background: #eae6df; }
+    .fact-card .content { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+    .fact-card h3 { font-size: 1.25rem; color: #1e3a5f; line-height: 1.3; font-weight: 700; letter-spacing: -0.2px; }
+    .fact-card p { font-size: 0.92rem; color: #555; flex: 1; line-height: 1.5; }
+    .fact-card .meta { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; flex-wrap: wrap; }
+    .fact-card .tag {
+      background: #f0ece4; color: #6b5e4e; padding: 4px 10px;
+      border-radius: 16px; font-weight: 500;
+    }
+    .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 9px 20px; background: #b13e3e; color: #fff; border: none;
+      border-radius: 24px; font-weight: 600; cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s; font-size: 0.9rem;
+      text-decoration: none; box-shadow: 0 4px 10px rgba(177,62,62,0.2);
+    }
+    .btn:hover { background: #9a2e2e; box-shadow: 0 6px 16px rgba(177,62,62,0.3); }
+    .btn-outline {
+      background: transparent; border: 1.5px solid #b13e3e; color: #b13e3e;
+      padding: 8px 18px; border-radius: 24px; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; text-decoration: none; display: inline-block;
+    }
+    .btn-outline:hover { background: #b13e3e; color: #fff; box-shadow: 0 4px 12px rgba(177,62,62,0.25); }
+
+    /* Плашка "Подтверждено архивом" – мягкий зелёный */
+    .proof-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #ecf5ea; color: #3a4f3a; border: 1px solid #c5d9c5;
+      padding: 8px 18px; border-radius: 28px; font-size: 0.82rem;
+      font-weight: 600; cursor: pointer; transition: background 0.2s, box-shadow 0.2s;
+      text-decoration: none; box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+    }
+    .proof-badge:hover { background: #e0f0dc; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+    /* Аккордеон документа */
+    .proof-block {
+      background: #faf8f5; border: 1px solid #e0d6c5; border-radius: 16px;
+      margin: 26px 0; overflow: hidden; transition: box-shadow 0.2s;
+    }
+    .proof-block:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.03); }
+    .proof-header {
+      display: flex; align-items: center; gap: 12px; padding: 18px 22px;
+      cursor: pointer; user-select: none; font-weight: 600; color: #5e4630;
+      background: #f5efe4; transition: background 0.2s;
+    }
+    .proof-header:hover { background: #efe4d6; }
+    .proof-title { flex: 1; margin: 0 8px; font-size: 0.98rem; }
+    .toggle-icon svg { transition: transform 0.35s; }
+    .proof-block.expanded .toggle-icon svg { transform: rotate(180deg); }
+    .proof-content {
+      max-height: 0; overflow: hidden; transition: max-height 0.5s ease, padding 0.3s;
+      padding: 0 22px; background: #fffcf8;
+    }
+    .proof-block.expanded .proof-content { max-height: 3500px; padding: 20px 22px; }
+    .proof-adaptation-text { margin-bottom: 14px; font-size: 0.95rem; line-height: 1.7; color: #3d3226; }
+    .proof-original-text { font-style: italic; color: #6b5e4e; border-left: 3px solid #d9c9a8; padding-left: 14px; margin-bottom: 14px; }
+    .proof-scan { width: 100%; max-height: 420px; object-fit: contain; background: #e8e2d6; border-radius: 8px; margin: 12px 0; cursor: pointer; border: 1px solid #d9ceb6; }
+    .proof-code { font-family: 'SF Mono', 'Consolas', monospace; background: #f0ede5; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; color: #5e4e3a; display: inline-block; margin-bottom: 14px; }
+    .proof-pdf-btn {
+      display: inline-block; background: #b13e3e; color: #fff; padding: 9px 20px;
+      border-radius: 22px; font-weight: 600; font-size: 0.9rem; text-decoration: none;
+      transition: background 0.2s, box-shadow 0.2s; box-shadow: 0 4px 10px rgba(177,62,62,0.2);
+    }
+    .proof-pdf-btn:hover { background: #9a2e2e; }
+
+    /* Страница статьи */
+    .article-detail, .document-detail, .timeline-page, .search-page { padding: 30px 0; }
+    .article-detail { position: relative; max-width: 760px; margin: 0 auto; }
+    .back-arrow {
+      position: absolute; left: -60px; top: 8px; width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      color: #555; transition: background 0.2s; text-decoration: none;
+      font-size: 1.2rem; font-weight: 600;
+    }
+    .back-arrow:hover { background: #f5f5f5; color: #111; }
+    .article-detail h1 { font-size: 2.1rem; color: #1e3a5f; margin-bottom: 14px; font-weight: 700; letter-spacing: -0.5px; }
+    .article-lead { font-size: 1.2rem; color: #555; margin-bottom: 24px; font-style: italic; border-left: 4px solid #b13e3e; padding-left: 16px; }
+    .article-text { font-size: 1rem; line-height: 1.8; color: #333; white-space: pre-line; margin-bottom: 32px; }
+    .gallery { display: flex; gap: 14px; flex-wrap: wrap; margin: 26px 0; }
+    .gallery img { width: calc(33.333% - 10px); border-radius: 12px; background: #ddd; object-fit: cover; }
+
+    /* Таймлайн */
+    .timeline { position: relative; padding: 20px 0; }
+    .timeline-event {
+      display: flex; gap: 22px; padding: 18px 0 18px 36px;
+      border-left: 3px solid #b13e3e; position: relative;
+    }
+    .timeline-event::before {
+      content: ''; width: 14px; height: 14px; background: #b13e3e;
+      border-radius: 50%; position: absolute; left: -8.5px; top: 24px;
+      border: 2px solid #fff; box-shadow: 0 0 0 2px #b13e3e;
+    }
+    .timeline-date { font-weight: 700; color: #b13e3e; min-width: 90px; font-size: 1.05rem; }
+    .timeline-text { font-size: 0.98rem; color: #444; line-height: 1.4; }
+
+    /* Поиск */
+    .search-filters {
+      display: flex; flex-wrap: wrap; gap: 22px; margin: 24px 0; align-items: center;
+      background: #fff; padding: 18px 22px; border-radius: 18px; box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+    }
+    .filter-group { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; }
+
+    @media (max-width: 768px) {
+      .header-inner { flex-direction: column; align-items: stretch; }
+      .nav { gap: 14px; overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .search-box { min-width: 100%; max-width: 100%; }
+      .feed { grid-template-columns: 1fr; }
+      .gallery img { width: 100%; }
+      .article-detail { padding: 20px 16px; }
+      .back-arrow { left: 10px; top: -40px; position: relative; margin-bottom: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const { createApp, ref, computed, watch, onMounted, defineComponent } = Vue;
+    const { createRouter, createWebHashHistory, useRoute, useRouter } = VueRouter;
+
+    // SVG иконки – новый замок
+    const icons = {
+      logoIcon: `<svg width="38" height="38" viewBox="0 0 38 38"><rect width="38" height="38" rx="10" fill="#F5EFE4"/><path d="M10 12h18v2H10zm0 6h18v2H10zm0 6h14v2H10z" fill="#B13E3E"/><circle cx="28" cy="26" r="3.5" fill="#B13E3E"/></svg>`,
+      lock: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="9" width="14" height="9" rx="2" fill="#3a4f3a"/><path d="M6 9V6a4 4 0 0 1 8 0v3" stroke="#3a4f3a" stroke-width="2" fill="none"/><circle cx="10" cy="13" r="1.5" fill="#fff"/></svg>`,
+      chevronDown: `<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 5l4 4 4-4" stroke="#5E4630" stroke-width="2.5" fill="none"/></svg>`,
+      arrowLeft: `<svg width="20" height="20" viewBox="0 0 20 20"><path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>`
+    };
+
+    // Данные
+    const documents = [
+      { id:'doc1', title:'Постановление Тамбовского губисполкома № 342', date:'1921-03-12', scan_url:'https://placehold.co/800x600/e0d6c5/5e4630?text=Архивный+скан+№342', adaptation_text:'В связи с катастрофическим неурожаем предписывается немедленно организовать общественные работы для крестьян волости, обеспечить подвоз продовольствия из южных уездов и создать резервные склады зерна.', original_text:'Въ виду крайняго недорода хлѣбовъ предписывается организовать общественныя работы...', code:'Ф. Р-1, Оп. 4, Д. 87, Л. 12-13', pdf_url:'#' },
+      { id:'doc2', title:'Рапорт уездного исправника о состоянии дорог', date:'1910-09-01', scan_url:'https://placehold.co/800x600/d9c9a8/5e4630?text=Рапорт+1910', adaptation_text:'Дороги в уезде находятся в крайне неудовлетворительном состоянии, мосты через реку Цну требуют немедленного капитального ремонта.', code:'Ф. 4, Оп. 1, Д. 23, Л. 5-6', pdf_url:'#' },
+      { id:'doc3', title:'Метрическая книга Троицкой церкви села Бондари', date:'1898-07-20', scan_url:'https://placehold.co/800x600/f0e6d2/5e4630?text=Метрическая+книга', adaptation_text:'Запись о рождении: Иванъ, сынъ крестьянина Петра Сидорова, родился 15 июля 1898 года.', code:'Ф. 154, Оп. 2, Д. 45, Л. 78', pdf_url:'#' },
+      { id:'doc4', title:'План застройки Тамбова 1870 года', date:'1870-05-10', scan_url:'https://placehold.co/800x600/c8b89a/5e4630?text=План+1870', adaptation_text:'Утверждён генеральный план города с выделением кварталов для каменного строительства.', code:'Ф. 22, Оп. 3, Д. 112, Л. 1', pdf_url:'#' },
+      { id:'doc5', title:'Ведомость урожая 1891 года', date:'1891-09-15', scan_url:'https://placehold.co/800x600/d1c0a8/5e4630?text=Ведомость', adaptation_text:'Собрано ржи 32 пуда с десятины, что значительно ниже среднего.', code:'Ф. 9, Оп. 1, Д. 58, Л. 23-25', pdf_url:'#' }
+    ];
+
+    const articles = [
+      { id:'art1', title:'Голод 1921 года: трагедия и выживание', lead:'Засуха, продразвёрстка и разруха поставили Тамбовскую губернию на грань гуманитарной катастрофы.', text:'Лето 1921 года выдалось небывало жарким. Урожай погиб почти полностью. Крестьяне остались без продовольствия и семян. Власти пытались организовать подвоз зерна, но транспортная система была разрушена.\n\nГубернский исполком ввёл карточную систему, однако паёк был мизерным. В сёлах начался голод, зафиксированы случаи употребления в пищу лебеды и коры. Только к зиме 1922 года ситуация начала улучшаться благодаря поставкам из Сибири и международной помощи.', gallery:['https://placehold.co/600x400/8b7a62/fff?text=Голод'], document_ids:['doc1','doc5'] },
+      { id:'art2', title:'Дороги Тамбовщины: от грунтовок до шоссе', lead:'Путешествие по ухабам и гатям — как добирались до уездных городов сто лет назад.', text:'Основными транспортными артериями служили грунтовые тракты. Весной и осенью сообщение прерывалось на недели. Мосты через Цну и её притоки часто были деревянными и требовали постоянного ремонта. Ямщики брали огромную плату за проезд в распутицу.\n\nТолько в 1930-х годах началось строительство первых асфальтированных дорог, соединивших Тамбов с Москвой и Воронежем. Сегодня от старых трактов остались лишь названия сёл.', gallery:[], document_ids:['doc2'] },
+      { id:'art3', title:'Тамбовский купец и его метрики', lead:'Архивные записи рассказывают о рождении, крещении и жизни купеческой семьи.', text:'Метрические книги — бесценный источник для генеалогов. В них фиксировались рождения, браки и смерти. Например, в книге Троицкой церкви села Бондари сохранилась запись о рождении Ивана Сидорова, ставшего впоследствии крупным хлеботорговцем.\n\nЭти документы позволяют восстановить не только семейные связи, но и социальную структуру губернии конца XIX века.', gallery:[], document_ids:['doc3'] },
+      { id:'art4', title:'Как застраивался губернский Тамбов', lead:'Архитектурные планы и реальность — каким видели город в XIX веке.', text:'В 1870 году был утверждён новый генеральный план Тамбова. Предполагалось создать регулярную сетку улиц, построить каменные присутственные места и благоустроить набережную. Часть проектов была реализована, но многие идеи остались на бумаге из-за нехватки средств.\n\nСегодня исторический центр во многом соответствует тому плану, и прогулка по нему — это путешествие в прошлое.', gallery:['https://placehold.co/600x400/b8a080/fff?text=План+1870'], document_ids:['doc4'] },
+      { id:'art5', title:'Неурожай 1891 года: предвестник беды', lead:'За тридцать лет до голода 1921-го губерния уже пережила серьёзный продовольственный кризис.', text:'Ведомости урожая 1891 года показывают, что сбор ржи упал до 32 пудов с десятины. Губернская управа запросила ссуду у государства. Крестьяне были вынуждены продавать скот, чтобы купить хлеб.\n\nЭтот кризис стал толчком к развитию агрономической помощи и созданию сети зерновых складов.', gallery:[], document_ids:['doc5'] },
+      { id:'art6', title:'Тамбовская старина: быт крестьянской избы', lead:'Как жили, что ели и во что верили крестьяне Тамбовской губернии.', text:'Изба топилась по-чёрному, освещалась лучиной. Основу рациона составляли ржаной хлеб, каша и овощи. Семьи были большими, по 8-12 человек. Одежду шили из домотканого холста.\n\nНесмотря на тяжёлые условия, крестьянская культура сохранила богатые традиции: песни, обряды, резьбу по дереву.', gallery:['https://placehold.co/600x400/8e7b64/fff?text=Изба'], document_ids:[] },
+      { id:'art7', title:'Легенды Тамбовского края: клады и разбойники', lead:'Народная память хранит истории о спрятанных сокровищах и лихих атаманах.', text:'По преданиям, в лесах под Тамбовом до сих пор лежат клады разбойника Кудеяра. Историки относятся к этому скептически, но легенды оживляют местный туризм. Некоторые старинные усадьбы действительно имеют подземные ходы.', gallery:[], document_ids:[] },
+      { id:'art8', title:'Тамбовский театр: от балагана до драмы', lead:'История старейшего театра области, открытого в 1786 году.', text:'Первый театр в Тамбове появился благодаря просвещённому губернатору Г.Р. Державину. С тех пор сцена пережила взлёты и падения, но всегда оставалась культурным центром. В годы войны здесь выступали эвакуированные труппы.', gallery:[], document_ids:[] },
+      { id:'art9', title:'Ремёсла Тамбовщины: гончары и кузнецы', lead:'Глиняная посуда, кованые изделия — чем славились местные мастера.', text:'В сёлах Рассказовского района до сих пор находят остатки гончарных горнов. Кузнецы Кирсановского уезда ковали подковы и оружие. Эти ремёсла постепенно уходят, но энтузиасты пытаются их возродить.', gallery:[], document_ids:[] },
+      { id:'art10', title:'Природа Тамбовского края: заповедные уголки', lead:'Воронинский заповедник, река Цна и бескрайние поля — экологическое богатство региона.', text:'На территории области сохранились уникальные дубравы, пойменные луга и редкие виды птиц. Заповедник «Воронинский» — дом для бобров, выхухоли и орлана-белохвоста.', gallery:[], document_ids:[] }
+    ];
+
+    const facts = [
+      { id:'f1', title:'Голод 1921 года', short_text:'Засуха уничтожила урожай, и тысячи людей оказались на грани голодной смерти.', image:'https://placehold.co/600x400/8b7a62/fff?text=Голод', type:'article', tags:['история','катастрофа'], detail_type:'article', detail_id:'art1', document_ids:['doc1'] },
+      { id:'f2', title:'Дороги губернии', short_text:'Грунтовые тракты и весенняя распутица делали поездки испытанием.', image:'https://placehold.co/600x400/a1937e/fff?text=Дороги', type:'article', tags:['инфраструктура'], detail_type:'article', detail_id:'art2', document_ids:['doc2'] },
+      { id:'f3', title:'Метрика купеческого сына', short_text:'Запись о рождении Ивана Сидорова в 1898 году.', image:'https://placehold.co/600x400/f0e6d2/fff?text=Метрика', type:'article', tags:['генеалогия'], detail_type:'article', detail_id:'art3', document_ids:['doc3'] },
+      { id:'f4', title:'План Тамбова 1870 года', short_text:'Генеральный план каменной застройки центра.', image:'https://placehold.co/600x400/b8a080/fff?text=План', type:'article', tags:['архитектура'], detail_type:'article', detail_id:'art4', document_ids:['doc4'] },
+      { id:'f5', title:'Неурожай 1891 года', short_text:'Сбор ржи упал до 32 пудов с десятины.', image:'https://placehold.co/600x400/d1c0a8/fff?text=Неурожай', type:'article', tags:['экономика'], detail_type:'article', detail_id:'art5', document_ids:['doc5'] },
+      { id:'f6', title:'Быт крестьянской избы', short_text:'Топили по-чёрному, ели ржаной хлеб.', image:'https://placehold.co/600x400/8e7b64/fff?text=Изба', type:'article', tags:['быт'], detail_type:'article', detail_id:'art6', document_ids:[] },
+      { id:'f7', title:'Легенды о кладах', short_text:'Разбойник Кудеяр спрятал сокровища.', image:'https://placehold.co/600x400/7a6a5a/fff?text=Клад', type:'article', tags:['легенды'], detail_type:'article', detail_id:'art7', document_ids:[] },
+      { id:'f8', title:'Тамбовский театр', short_text:'Основан в 1786 году при Державине.', image:'https://placehold.co/600x400/9c8a7a/fff?text=Театр', type:'article', tags:['культура'], detail_type:'article', detail_id:'art8', document_ids:[] },
+      { id:'f9', title:'Гончары и кузнецы', short_text:'Ремёсла Рассказовского и Кирсановского уездов.', image:'https://placehold.co/600x400/7d6e5e/fff?text=Ремесло', type:'article', tags:['ремесло'], detail_type:'article', detail_id:'art9', document_ids:[] },
+      { id:'f10', title:'Заповедник Воронинский', short_text:'Уникальная природа: дубравы, бобры.', image:'https://placehold.co/600x400/5d8a5e/fff?text=Заповедник', type:'article', tags:['природа'], detail_type:'article', detail_id:'art10', document_ids:[] },
+    ];
+
+    const timelineEvents = [
+      { date:'1636', title:'Основание Тамбова как крепости.' },
+      { date:'1786', title:'Открытие первого театра.' },
+      { date:'1870', title:'Генеральный план каменной застройки.' },
+      { date:'1891', title:'Сильный неурожай.' },
+      { date:'1910', title:'Рапорт о состоянии дорог.' },
+      { date:'1921', title:'Голод в Тамбовской губернии.' },
+      { date:'1937', title:'Образование Тамбовской области.' },
+      { date:'1994', title:'Создание Воронинского заповедника.' }
+    ];
+
+    function getDocumentById(id) { return documents.find(d => d.id === id) || null; }
+    function getArticleById(id) { return articles.find(a => a.id === id) || null; }
+
+    // Компоненты
+    const ProofBlock = defineComponent({
+      props: { documentId: String, autoExpand: Boolean },
+      setup(props) {
+        const isExpanded = ref(props.autoExpand || false);
+        const doc = computed(() => getDocumentById(props.documentId));
+        return { isExpanded, doc, toggle: () => isExpanded.value = !isExpanded.value, icons };
+      },
+      template: `
+        <div v-if="doc" class="proof-block" :class="{ expanded: isExpanded }">
+          <div class="proof-header" @click="toggle">
+            <span v-html="icons.lock"></span>
+            <span>Подтверждено архивом</span>
+            <span class="proof-title">{{ doc.title }}</span>
+            <span class="toggle-icon" v-html="icons.chevronDown"></span>
+          </div>
+          <div class="proof-content">
+            <div class="proof-adaptation-text">{{ doc.adaptation_text }}</div>
+            <div v-if="doc.original_text" class="proof-original-text">{{ doc.original_text }}</div>
+            <img :src="doc.scan_url" class="proof-scan" @click="window.open(doc.scan_url, '_blank')" />
+            <div class="proof-code">Шифр: {{ doc.code }}</div>
+            <a :href="doc.pdf_url" class="proof-pdf-btn" download>Скачать PDF</a>
+          </div>
+        </div>
+        <div v-else class="proof-block" style="opacity:0.6;">Документ не найден</div>
+      `
+    });
+
+    const QuickSearch = defineComponent({
+      setup() {
+        const query = ref('');
+        const suggestions = ref([]);
+        const show = ref(false);
+        const router = useRouter();
+        let timer = null;
+        function fetchSuggestions(q) {
+          if (!q.trim()) { suggestions.value = []; show.value = false; return; }
+          const results = [];
+          const addItem = (item) => {
+            if (item.title.toLowerCase().includes(q.toLowerCase())) {
+              results.push({
+                id: item.id, title: item.title,
+                image: item.image || (item.gallery && item.gallery[0]) || null,
+                short_fact: item.short_text || item.lead || '',
+                has_document: item.document_ids && item.document_ids.length > 0,
+                detail_link: item.detail_type ? `/${item.detail_type}/${item.detail_id}` : `/article/${item.id}`
+              });
+            }
+          };
+          facts.forEach(addItem);
+          articles.forEach(a => addItem({...a, type:'article', short_text: a.lead, detail_type:'article', detail_id: a.id}));
+          suggestions.value = results.slice(0, 10);
+          show.value = results.length > 0;
+        }
+        watch(query, (newVal) => { clearTimeout(timer); timer = setTimeout(() => fetchSuggestions(newVal), 300); });
+        function onSelect(s) { show.value = false; query.value = ''; router.push(s.detail_link); }
+        function onEnter() { if (query.value.trim()) { router.push({ path: '/search', query: { q: query.value.trim() } }); show.value = false; query.value = ''; } }
+        return { query, suggestions, show, onSelect, onEnter };
+      },
+      template: `
+        <div class="search-box">
+          <input type="text" v-model="query" placeholder="Быстрый поиск..." @keyup.enter="onEnter" @focus="query && fetchSuggestions(query)" @blur="setTimeout(() => show = false, 200)" />
+          <div v-if="show && suggestions.length" class="suggestions">
+            <div v-for="s in suggestions" :key="s.id" class="suggestion-item" @mousedown.prevent="onSelect(s)">
+              <img :src="s.image || ''" alt="" style="background:#eee;" />
+              <div class="info"><div class="title">{{ s.title }}</div><div class="desc">{{ s.short_fact?.substring(0, 70) }}...</div></div>
+              <span v-if="s.has_document" class="badge">архив</span>
+            </div>
+          </div>
+        </div>
+      `
+    });
+
+    const AppLayout = {
+      template: `
+        <div>
+          <header class="header"><div class="container header-inner">
+            <div class="logo"><span v-html="icons.logoIcon"></span> Тамбовщина. Сейчас</div>
+            <nav class="nav">
+              <router-link to="/">Лента</router-link>
+              <router-link to="/articles">Статьи</router-link>
+              <router-link to="/timeline">Таймлайн</router-link>
+            </nav>
+            <QuickSearch />
+          </div></header>
+          <main class="container"><router-view /></main>
+        </div>
+      `,
+      data() { return { icons }; }
+    };
+
+    const FeedPage = {
+      setup() { return { facts, icons }; },
+      template: `
+        <div class="feed">
+          <div v-for="fact in facts" :key="fact.id" class="fact-card">
+            <img :src="fact.image" :alt="fact.title" />
+            <div class="content">
+              <h3>{{ fact.title }}</h3>
+              <p>{{ fact.short_text }}</p>
+              <div class="meta"><span v-for="tag in fact.tags" :key="tag" class="tag">#{{ tag }}</span></div>
+              <div class="actions">
+                <router-link :to="'/' + fact.detail_type + '/' + fact.detail_id" class="btn">Подробнее</router-link>
+                <router-link v-if="fact.document_ids.length" :to="'/' + fact.detail_type + '/' + fact.detail_id + '#proof'" class="proof-badge"><span v-html="icons.lock"></span> Подтверждено</router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    const ArticleListPage = {
+      setup() { return { articles, icons }; },
+      template: `
+        <div class="feed">
+          <div v-for="a in articles" :key="a.id" class="fact-card">
+            <img :src="a.gallery?.[0] || 'https://placehold.co/600x400/ddd/999?text=Статья'" :alt="a.title" />
+            <div class="content">
+              <h3>{{ a.title }}</h3>
+              <p>{{ a.lead }}</p>
+              <div class="actions">
+                <router-link :to="'/article/' + a.id" class="btn">Читать</router-link>
+                <router-link v-if="a.document_ids.length" :to="'/article/' + a.id + '#proof'" class="proof-badge"><span v-html="icons.lock"></span> Архив</router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    const ArticleDetailPage = defineComponent({
+      setup() {
+        const route = useRoute();
+        const article = computed(() => getArticleById(route.params.id));
+        const autoExpand = computed(() => route.hash === '#proof');
+        return { article, autoExpand, icons };
+      },
+      components: { ProofBlock },
+      template: `
+        <div v-if="article" class="article-detail">
+          <router-link to="/articles" class="back-arrow" v-html="icons.arrowLeft"></router-link>
+          <h1>{{ article.title }}</h1>
+          <p class="article-lead">{{ article.lead }}</p>
+          <div class="article-text">{{ article.text }}</div>
+          <div class="gallery" v-if="article.gallery && article.gallery.length">
+            <img v-for="(img, idx) in article.gallery" :key="idx" :src="img" />
+          </div>
+          <ProofBlock v-for="docId in article.document_ids" :key="docId" :documentId="docId" :autoExpand="autoExpand" />
+        </div>
+        <div v-else class="article-detail">Статья не найдена.</div>
+      `
+    });
+
+    const TimelinePage = {
+      setup() { return { timelineEvents }; },
+      template: `
+        <div class="timeline-page">
+          <h2 style="margin-bottom:24px; font-weight:700;">Хронология Тамбовского края</h2>
+          <div class="timeline">
+            <div v-for="ev in timelineEvents" :key="ev.date" class="timeline-event">
+              <span class="timeline-date">{{ ev.date }}</span>
+              <span class="timeline-text">{{ ev.title }}</span>
+            </div>
+          </div>
+        </div>
+      `
+    };
+
+    const SearchPage = defineComponent({
+      setup() {
+        const route = useRoute(); const router = useRouter();
+        const query = ref(route.query.q || '');
+        const typeFilter = ref('');
+        const hasDocumentOnly = ref(false);
+        const results = ref([]);
+        function performSearch() {
+          const q = query.value.toLowerCase().trim();
+          let filtered = [];
+          const allItems = [
+            ...facts.map(f => ({...f, searchText: f.title+' '+f.short_text, link: `/${f.detail_type}/${f.detail_id}`})),
+            ...articles.map(a => ({...a, searchText: a.title+' '+a.lead+' '+a.text, link: `/article/${a.id}`, type:'article'}))
+          ];
+          allItems.forEach(item => {
+            if (q && !item.searchText.toLowerCase().includes(q)) return;
+            if (typeFilter.value && item.type !== typeFilter.value) return;
+            if (hasDocumentOnly.value && (!item.document_ids || item.document_ids.length === 0)) return;
+            filtered.push(item);
+          });
+          results.value = filtered;
+        }
+        watch([query, typeFilter, hasDocumentOnly], () => { router.replace({ query: { q: query.value || undefined } }); performSearch(); }, { immediate: true });
+        onMounted(performSearch);
+        return { query, typeFilter, hasDocumentOnly, results };
+      },
+      template: `
+        <div class="search-page">
+          <h2>Расширенный поиск</h2>
+          <div class="search-filters">
+            <input type="text" v-model="query" placeholder="Что ищем?" style="flex:2; padding:10px; border-radius:24px; border:1px solid #ddd;" />
+            <select v-model="typeFilter" style="padding:10px; border-radius:24px; border:1px solid #ddd;">
+              <option value="">Все типы</option>
+              <option value="article">Статьи</option>
+            </select>
+            <label class="filter-group"><input type="checkbox" v-model="hasDocumentOnly" /> Только с архивным подтверждением</label>
+          </div>
+          <div class="results feed">
+            <div v-for="item in results" :key="item.id+item.type" class="fact-card">
+              <img :src="item.image || (item.gallery&&item.gallery[0]) || 'https://placehold.co/400x250/eee/999'" alt="" />
+              <div class="content">
+                <h3>{{ item.title }}</h3>
+                <p>{{ (item.short_text || item.lead || '').substring(0, 120) }}...</p>
+                <router-link :to="item.link" class="btn">Подробнее</router-link>
+              </div>
+            </div>
+            <div v-if="results.length===0" style="padding:30px; color:#888;">Ничего не найдено</div>
+          </div>
+        </div>
+      `
+    });
+
+    const DocumentPage = defineComponent({
+      setup() { const route = useRoute(); const doc = computed(() => getDocumentById(route.params.id)); return { doc }; },
+      template: `
+        <div v-if="doc" class="document-detail">
+          <h1>{{ doc.title }}</h1><p><strong>Дата:</strong> {{ doc.date }}</p>
+          <div class="proof-adaptation-text">{{ doc.adaptation_text }}</div>
+          <div v-if="doc.original_text" class="proof-original-text">{{ doc.original_text }}</div>
+          <img :src="doc.scan_url" class="proof-scan" style="max-height:600px;" @click="window.open(doc.scan_url)" />
+          <div class="proof-code">Шифр: {{ doc.code }}</div>
+          <a :href="doc.pdf_url" class="proof-pdf-btn" download>Скачать PDF</a>
+          <br/><br/><router-link to="/" class="btn-outline">← На главную</router-link>
+        </div>
+        <div v-else>Документ не найден</div>
+      `
+    });
+
+    const routes = [
+      { path: '/', component: FeedPage },
+      { path: '/articles', component: ArticleListPage },
+      { path: '/article/:id', component: ArticleDetailPage },
+      { path: '/timeline', component: TimelinePage },
+      { path: '/search', component: SearchPage },
+      { path: '/document/:id', component: DocumentPage }
+    ];
+
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes,
+      scrollBehavior(to) { if (to.hash) return { el: to.hash, behavior: 'smooth' }; return { top: 0 }; }
+    });
+
+    const app = createApp(AppLayout);
+    app.component('QuickSearch', QuickSearch);
+    app.component('ProofBlock', ProofBlock);
+    app.use(router);
+    app.mount('#app');
+  </script>
+</body>
+</html>
