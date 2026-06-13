@@ -13,55 +13,200 @@
       background: #f4f2ee;
       color: #1a1a1a;
       line-height: 1.5;
+      padding-bottom: 80px; /* для нижнего таб-бара */
     }
     a { color: inherit; text-decoration: none; }
     img { max-width: 100%; display: block; }
 
     .container { max-width: 1240px; margin: 0 auto; padding: 0 20px; }
 
-    .header { background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.04); position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid rgba(0,0,0,0.04); }
-    .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 14px 0; gap: 18px; }
-    .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.4rem; color: #1e3a5f; }
-    .logo svg { height: 38px; width: 38px; }
-    .nav { display: flex; gap: 24px; font-weight: 500; flex-wrap: wrap; }
-    .nav a { color: #444; font-size: 0.95rem; padding: 6px 0; border-bottom: 2px solid transparent; }
-    .nav a.router-link-active, .nav a:hover { color: #b13e3e; border-bottom-color: #b13e3e; }
-    .search-box { position: relative; min-width: 260px; flex: 1; max-width: 380px; }
-    .search-box input { width: 100%; padding: 10px 16px; border: 1px solid #e0ded9; border-radius: 28px; font-size: 0.95rem; background: #fff; }
-    .search-box input:focus { outline: none; border-color: #b13e3e; box-shadow: 0 4px 14px rgba(177,62,62,0.12); }
-    .suggestions { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: #fff; border: 1px solid #eee; border-radius: 16px; box-shadow: 0 16px 32px rgba(0,0,0,0.08); z-index: 2000; max-height: 360px; overflow-y: auto; padding: 6px 0; }
-    .suggestion-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer; }
+    /* Шапка */
+    .header {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      padding: 14px 0;
+      gap: 18px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: #1e3a5f;
+      padding-left: 10px; /* небольшой отступ */
+    }
+    .logo svg { height: 38px; width: 38px; flex-shrink: 0; }
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 200px;
+      max-width: 100%;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid #e0ded9;
+      border-radius: 28px;
+      font-size: 0.95rem;
+      background: #fff;
+    }
+    .search-box input:focus {
+      outline: none;
+      border-color: #b13e3e;
+      box-shadow: 0 4px 14px rgba(177,62,62,0.12);
+    }
+    .suggestions {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #eee;
+      border-radius: 16px;
+      box-shadow: 0 16px 32px rgba(0,0,0,0.08);
+      z-index: 2000;
+      max-height: 360px;
+      overflow-y: auto;
+      padding: 6px 0;
+      width: 100%; /* совпадает с поисковой строкой */
+    }
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+    }
     .suggestion-item:hover { background: #f8f6f2; }
     .suggestion-item img { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; background: #eee; }
     .suggestion-item .info { flex: 1; }
     .suggestion-item .title { font-weight: 600; font-size: 0.9rem; }
     .suggestion-item .desc { font-size: 0.8rem; color: #777; }
-    .suggestion-item .badge { font-size: 0.7rem; background: #c3e6cb; color: #155724; padding: 3px 10px; border-radius: 14px; font-weight: 500; }
+    .suggestion-item .badge {
+      font-size: 0.7rem;
+      background: #c3e6cb;
+      color: #155724;
+      padding: 3px 10px;
+      border-radius: 14px;
+      font-weight: 500;
+    }
 
-    .feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; padding: 30px 0; }
-    .fact-card { background: #fff; border-radius: 20px; overflow: hidden; box-shadow: 0 6px 18px rgba(0,0,0,0.04); transition: transform 0.25s, box-shadow 0.25s; display: flex; flex-direction: column; }
+    /* Баннер на главной */
+    .hero-image {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 20px;
+      margin: 20px 0;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    }
+
+    /* Лента и карточки */
+    .feed { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 28px; padding: 10px 0 30px; }
+    .fact-card {
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+      transition: transform 0.25s, box-shadow 0.25s;
+      display: flex;
+      flex-direction: column;
+    }
     .fact-card:hover { transform: translateY(-6px); box-shadow: 0 18px 32px rgba(0,0,0,0.08); }
     .fact-card img { width: 100%; height: 210px; object-fit: cover; background: #eae6df; }
     .fact-card .content { padding: 18px 20px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
     .fact-card h3 { font-size: 1.25rem; color: #1e3a5f; }
     .fact-card p { font-size: 0.92rem; color: #555; flex: 1; }
     .fact-card .meta { display: flex; gap: 10px; flex-wrap: wrap; }
-    .fact-card .tag { background: #f0ece4; color: #6b5e4e; padding: 4px 10px; border-radius: 16px; font-weight: 500; font-size: 0.8rem; }
+    .fact-card .tag {
+      background: #f0ece4;
+      color: #6b5e4e;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
     .actions { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; gap: 10px; }
-    .btn { display: inline-flex; align-items: center; justify-content: center; padding: 9px 20px; background: #b13e3e; color: #fff; border: none; border-radius: 24px; font-weight: 600; text-decoration: none; box-shadow: 0 4px 10px rgba(177,62,62,0.2); }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 20px;
+      background: #b13e3e;
+      color: #fff;
+      border: none;
+      border-radius: 24px;
+      font-weight: 600;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(177,62,62,0.2);
+    }
     .btn:hover { background: #9a2e2e; }
-    .btn-outline { background: transparent; border: 1.5px solid #b13e3e; color: #b13e3e; padding: 8px 18px; border-radius: 24px; font-weight: 600; text-decoration: none; }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #b13e3e;
+      color: #b13e3e;
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-weight: 600;
+      text-decoration: none;
+    }
     .btn-outline:hover { background: #b13e3e; color: #fff; }
-    .proof-badge { display: inline-flex; align-items: center; gap: 6px; background: #ecf5ea; color: #3a4f3a; border: 1px solid #c5d9c5; padding: 8px 18px; border-radius: 28px; font-size: 0.82rem; font-weight: 600; text-decoration: none; }
+    .proof-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ecf5ea;
+      color: #3a4f3a;
+      border: 1px solid #c5d9c5;
+      padding: 8px 18px;
+      border-radius: 28px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
     .proof-badge:hover { background: #e0f0dc; }
 
-    .proof-block { background: #faf8f5; border: 1px solid #e0d6c5; border-radius: 16px; margin: 26px 0; overflow: hidden; }
-    .proof-header { display: flex; align-items: center; gap: 12px; padding: 18px 22px; cursor: pointer; background: #f5efe4; font-weight: 600; color: #5e4630; }
+    /* Аккордеон */
+    .proof-block {
+      background: #faf8f5;
+      border: 1px solid #e0d6c5;
+      border-radius: 16px;
+      margin: 26px 0;
+      overflow: hidden;
+    }
+    .proof-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 22px;
+      cursor: pointer;
+      background: #f5efe4;
+      font-weight: 600;
+      color: #5e4630;
+    }
     .proof-header:hover { background: #efe4d6; }
     .proof-title { flex: 1; }
     .toggle-icon svg { transition: transform 0.35s; }
     .proof-block.expanded .toggle-icon svg { transform: rotate(180deg); }
-    .proof-content { max-height: 0; overflow: hidden; transition: max-height 0.5s ease, padding 0.3s; padding: 0 22px; background: #fffcf8; }
+    .proof-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, padding 0.3s;
+      padding: 0 22px;
+      background: #fffcf8;
+    }
     .proof-block.expanded .proof-content { max-height: 3500px; padding: 20px 22px; }
     .proof-adaptation-text { margin-bottom: 14px; font-size: 0.95rem; line-height: 1.7; color: #3d3226; }
     .proof-original-text { font-style: italic; color: #6b5e4e; border-left: 3px solid #d9c9a8; padding-left: 14px; margin-bottom: 14px; }
@@ -70,9 +215,23 @@
     .proof-pdf-btn { display: inline-block; background: #b13e3e; color: #fff; padding: 9px 20px; border-radius: 22px; text-decoration: none; }
     .proof-pdf-btn:hover { background: #9a2e2e; }
 
+    /* Страницы */
     .article-detail, .document-detail, .timeline-page, .search-page { padding: 30px 0; }
     .article-detail { position: relative; max-width: 760px; margin: 0 auto; }
-    .back-arrow { position: absolute; left: -60px; top: 8px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 50%; box-shadow: 0 2px 8px rgba(0,0,0,0.04); color: #555; }
+    .back-arrow {
+      position: absolute;
+      left: -60px;
+      top: 8px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      color: #555;
+    }
     .back-arrow:hover { background: #f5f5f5; color: #111; }
     .article-detail h1 { font-size: 2.1rem; color: #1e3a5f; margin-bottom: 14px; }
     .article-lead { font-size: 1.2rem; color: #555; margin-bottom: 24px; font-style: italic; border-left: 4px solid #b13e3e; padding-left: 16px; }
@@ -80,19 +239,118 @@
     .gallery { display: flex; gap: 14px; flex-wrap: wrap; margin: 26px 0; }
     .gallery img { width: calc(33.333% - 10px); border-radius: 12px; }
 
+    /* Карта упрощённая */
+    .map-container {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+      margin-top: 10px;
+    }
+    .map-marker {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      cursor: pointer;
+      z-index: 10;
+    }
+    .marker-dot {
+      width: 16px;
+      height: 16px;
+      background: #b13e3e;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .marker-popup {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+      font-size: 0.85rem;
+      white-space: normal;
+      width: 200px;
+      z-index: 20;
+      text-align: center;
+    }
+
+    /* Таймлайн */
     .timeline { position: relative; padding: 20px 0; }
-    .timeline-event { display: flex; gap: 22px; padding: 18px 0 18px 36px; border-left: 3px solid #b13e3e; position: relative; }
-    .timeline-event::before { content: ''; width: 14px; height: 14px; background: #b13e3e; border-radius: 50%; position: absolute; left: -8.5px; top: 24px; border: 2px solid #fff; box-shadow: 0 0 0 2px #b13e3e; }
+    .timeline-event {
+      display: flex;
+      gap: 22px;
+      padding: 18px 0 18px 36px;
+      border-left: 3px solid #b13e3e;
+      position: relative;
+    }
+    .timeline-event::before {
+      content: '';
+      width: 14px;
+      height: 14px;
+      background: #b13e3e;
+      border-radius: 50%;
+      position: absolute;
+      left: -8.5px;
+      top: 24px;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px #b13e3e;
+    }
     .timeline-date { font-weight: 700; color: #b13e3e; min-width: 90px; }
-    .search-filters { display: flex; flex-wrap: wrap; gap: 22px; margin: 24px 0; align-items: center; background: #fff; padding: 18px 22px; border-radius: 18px; }
+    .search-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 22px;
+      margin: 24px 0;
+      align-items: center;
+      background: #fff;
+      padding: 18px 22px;
+      border-radius: 18px;
+    }
     .filter-group { display: flex; align-items: center; gap: 10px; }
+
+    /* Нижний таб-бар */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 -2px 16px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 8px 0 12px;
+      z-index: 1000;
+    }
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      color: #888;
+      transition: color 0.2s;
+      text-decoration: none;
+      padding: 4px 12px;
+    }
+    .tab-item.router-link-active { color: #b13e3e; }
+    .tab-item svg { width: 22px; height: 22px; }
 
     @media (max-width: 768px) {
       .header-inner { flex-direction: column; align-items: stretch; }
-      .nav { overflow-x: auto; }
+      .logo { padding-left: 20px; } /* увеличен отступ на телефонах */
+      .search-box { max-width: 100%; }
       .feed { grid-template-columns: 1fr; }
       .gallery img { width: 100%; }
       .back-arrow { left: 10px; top: -40px; position: relative; margin-bottom: 10px; }
+      .hero-image { border-radius: 16px; }
+      .article-detail { padding: 20px 0; }
     }
   </style>
 </head>
@@ -102,15 +360,21 @@
     const { createApp, ref, computed, watch, onMounted, defineComponent } = Vue;
     const { createRouter, createWebHashHistory, useRoute, useRouter } = VueRouter;
 
+    // SVG иконки
     const icons = {
       logoIcon: `<svg width="38" height="38" viewBox="0 0 38 38"><rect width="38" height="38" rx="10" fill="#F5EFE4"/><path d="M10 12h18v2H10zm0 6h18v2H10zm0 6h14v2H10z" fill="#B13E3E"/><circle cx="28" cy="26" r="3.5" fill="#B13E3E"/></svg>`,
       lock: `<svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="9" width="14" height="9" rx="2" fill="#3a4f3a"/><path d="M6 9V6a4 4 0 0 1 8 0v3" stroke="#3a4f3a" stroke-width="2" fill="none"/><circle cx="10" cy="13" r="1.5" fill="#fff"/></svg>`,
       chevronDown: `<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 5l4 4 4-4" stroke="#5E4630" stroke-width="2.5" fill="none"/></svg>`,
-      arrowLeft: `<svg width="20" height="20" viewBox="0 0 20 20"><path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>`
+      arrowLeft: `<svg width="20" height="20" viewBox="0 0 20 20"><path d="M12 5l-5 5 5 5" stroke="currentColor" stroke-width="2" fill="none"/></svg>`,
+      home: `<svg viewBox="0 0 24 24"><path d="M3 12l9-9 9 9v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+      articles: `<svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" fill="none"/></svg>`,
+      timeline: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/><polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2"/></svg>`,
+      map: `<svg viewBox="0 0 24 24"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z" fill="none" stroke="currentColor" stroke-width="2"/></svg>`
     };
 
+    // Данные (документы, статьи, факты, таймлайн, карта)
     const documents = [
-      { id:'doc1', title:'Постановление Тамбовского губисполкома № 342', date:'1921-03-12', scan_url:'https://placehold.co/800x600/e0d6c5/5e4630?text=Архивный+скан+№342', adaptation_text:'В связи с катастрофическим неурожаем предписывается немедленно организовать общественные работы для крестьян волости, обеспечить подвоз продовольствия из южных уездов и создать резервные склады зерна.', original_text:'Въ виду крайняго недорода хлѣбовъ предписывается организовать общественныя работы...', code:'Ф. Р-1, Оп. 4, Д. 87, Л. 12-13', pdf_url:'#' },
+      { id:'doc1', title:'Постановление Тамбовского губисполкома № 342', date:'1921-03-12', scan_url:'https://placehold.co/800x600/e0d6c5/5e4630?text=Архивный+скан+№342', adaptation_text:'В связи с катастрофическим неурожаем предписывается немедленно организовать общественные работы для крестьян волости, обеспечить подвоз продовольствия из южных уездов и создать резервные склады зерна.', code:'Ф. Р-1, Оп. 4, Д. 87, Л. 12-13', pdf_url:'#' },
       { id:'doc2', title:'Рапорт уездного исправника о состоянии дорог', date:'1910-09-01', scan_url:'https://placehold.co/800x600/d9c9a8/5e4630?text=Рапорт+1910', adaptation_text:'Дороги в уезде находятся в крайне неудовлетворительном состоянии, мосты через реку Цну требуют немедленного капитального ремонта.', code:'Ф. 4, Оп. 1, Д. 23, Л. 5-6', pdf_url:'#' },
       { id:'doc3', title:'Метрическая книга Троицкой церкви села Бондари', date:'1898-07-20', scan_url:'https://placehold.co/800x600/f0e6d2/5e4630?text=Метрическая+книга', adaptation_text:'Запись о рождении: Иванъ, сынъ крестьянина Петра Сидорова, родился 15 июля 1898 года.', code:'Ф. 154, Оп. 2, Д. 45, Л. 78', pdf_url:'#' },
       { id:'doc4', title:'План застройки Тамбова 1870 года', date:'1870-05-10', scan_url:'https://placehold.co/800x600/c8b89a/5e4630?text=План+1870', adaptation_text:'Утверждён генеральный план города с выделением кварталов для каменного строительства.', code:'Ф. 22, Оп. 3, Д. 112, Л. 1', pdf_url:'#' },
@@ -142,6 +406,18 @@
       document_ids: a.document_ids
     }));
 
+    // Координаты маркеров в процентах (подберите точнее под свою карту)
+    const mapPoints = [
+      { id:'mp1', x:48, y:45, title:'Краеведческий музей', desc:'Основан в 1879 году.' },
+      { id:'mp2', x:41, y:42, title:'Усадьба Асеевых', desc:'Памятник архитектуры.' },
+      { id:'mp3', x:43, y:50, title:'Свято-Троицкий собор', desc:'Главный храм епархии.' },
+      { id:'mp4', x:55, y:38, title:'Село Бондари', desc:'Метрическая книга.' },
+      { id:'mp5', x:50, y:55, title:'Исторический мост', desc:'Через Цну.' },
+      { id:'mp6', x:38, y:43, title:'Воронинский заповедник', desc:'Редкие виды.' },
+      { id:'mp7', x:46, y:30, title:'Паромная переправа', desc:'До мостов.' },
+      { id:'mp8', x:52, y:53, title:'Губернская управа', desc:'Борьба с голодом.' }
+    ];
+
     const timelineEvents = [
       { date:'1636', title:'Основание Тамбова как крепости.' },
       { date:'1786', title:'Открытие первого театра.' },
@@ -156,6 +432,7 @@
     function getDocumentById(id) { return documents.find(d => d.id === id) || null; }
     function getArticleById(id) { return articles.find(a => a.id === id) || null; }
 
+    // Компоненты
     const ProofBlock = defineComponent({
       props: { documentId: String, autoExpand: Boolean },
       setup(props) {
@@ -173,7 +450,6 @@
           </div>
           <div class="proof-content">
             <div class="proof-adaptation-text">{{ doc.adaptation_text }}</div>
-            <div v-if="doc.original_text" class="proof-original-text">{{ doc.original_text }}</div>
             <img :src="doc.scan_url" class="proof-scan" @click="window.open(doc.scan_url, '_blank')" />
             <div class="proof-code">Шифр: {{ doc.code }}</div>
             <a :href="doc.pdf_url" class="proof-pdf-btn" download>Скачать PDF</a>
@@ -231,16 +507,31 @@
     const AppLayout = {
       template: `
         <div>
-          <header class="header"><div class="container header-inner">
-            <div class="logo"><span v-html="icons.logoIcon"></span> Тамбовщина. Сейчас</div>
-            <nav class="nav">
-              <router-link to="/">Лента</router-link>
-              <router-link to="/articles">Статьи</router-link>
-              <router-link to="/timeline">Таймлайн</router-link>
-            </nav>
-            <QuickSearch />
-          </div></header>
+          <header class="header">
+            <div class="container header-inner">
+              <div class="logo"><span v-html="icons.logoIcon"></span> Тамбовщина. Сейчас</div>
+              <QuickSearch />
+            </div>
+          </header>
           <main class="container"><router-view /></main>
+          <nav class="tab-bar">
+            <router-link to="/" class="tab-item" exact-active-class="router-link-active">
+              <span v-html="icons.home"></span>
+              <span>Лента</span>
+            </router-link>
+            <router-link to="/articles" class="tab-item" active-class="router-link-active">
+              <span v-html="icons.articles"></span>
+              <span>Статьи</span>
+            </router-link>
+            <router-link to="/timeline" class="tab-item" active-class="router-link-active">
+              <span v-html="icons.timeline"></span>
+              <span>Таймлайн</span>
+            </router-link>
+            <router-link to="/map" class="tab-item" active-class="router-link-active">
+              <span v-html="icons.map"></span>
+              <span>Карта</span>
+            </router-link>
+          </nav>
         </div>
       `,
       data() { return { icons }; }
@@ -249,14 +540,17 @@
     const FeedPage = {
       setup() { return { facts, icons }; },
       template: `
-        <div class="feed">
-          <div v-for="fact in facts" :key="fact.id" class="fact-card">
-            <img :src="fact.image" />
-            <div class="content"><h3>{{ fact.title }}</h3><p>{{ fact.short_text }}</p>
-              <div class="meta"><span v-for="tag in fact.tags" :key="tag" class="tag">#{{ tag }}</span></div>
-              <div class="actions">
-                <router-link :to="'/' + fact.detail_type + '/' + fact.detail_id" class="btn">Подробнее</router-link>
-                <router-link v-if="fact.document_ids.length" :to="'/' + fact.detail_type + '/' + fact.detail_id + '#proof'" class="proof-badge"><span v-html="icons.lock"></span> Подтверждено</router-link>
+        <div>
+          <img src="image_63.jpg" alt="Природа Тамбовской области" class="hero-image" />
+          <div class="feed">
+            <div v-for="fact in facts" :key="fact.id" class="fact-card">
+              <img :src="fact.image" />
+              <div class="content"><h3>{{ fact.title }}</h3><p>{{ fact.short_text }}</p>
+                <div class="meta"><span v-for="tag in fact.tags" :key="tag" class="tag">#{{ tag }}</span></div>
+                <div class="actions">
+                  <router-link :to="'/' + fact.detail_type + '/' + fact.detail_id" class="btn">Подробнее</router-link>
+                  <router-link v-if="fact.document_ids.length" :to="'/' + fact.detail_type + '/' + fact.detail_id + '#proof'" class="proof-badge"><span v-html="icons.lock"></span> Подтверждено</router-link>
+                </div>
               </div>
             </div>
           </div>
@@ -299,6 +593,50 @@
           <ProofBlock v-for="docId in article.document_ids" :key="docId" :documentId="docId" :autoExpand="autoExpand" />
         </div>
         <div v-else class="article-detail">Статья не найдена.</div>
+      `
+    });
+
+    const MapPage = {
+      data() {
+        return {
+          activePopup: null,
+          points: mapPoints
+        }
+      },
+      template: `
+        <div>
+          <h2 style="margin: 20px 0 10px;">Карта исторических мест</h2>
+          <div class="map-container" @click="activePopup = null">
+            <img src="karta-oblasti.jpg" alt="Карта Тамбовской области" style="width:100%; display:block;" />
+            <div v-for="mp in points" :key="mp.id"
+                 class="map-marker"
+                 :style="{ left: mp.x + '%', top: mp.y + '%' }"
+                 @click.stop="activePopup = (activePopup === mp.id ? null : mp.id)">
+              <div class="marker-dot"></div>
+              <div v-if="activePopup === mp.id" class="marker-popup">
+                <strong>{{ mp.title }}</strong><br/>{{ mp.desc }}
+                <br/><router-link :to="'/map/' + mp.id" style="color:#b13e3e;">Подробнее</router-link>
+              </div>
+            </div>
+          </div>
+          <p style="color:#666; margin-top:8px;">Нажмите на маркер для информации</p>
+        </div>
+      `
+    };
+
+    const MapPointDetailPage = defineComponent({
+      setup() {
+        const route = useRoute();
+        const point = computed(() => mapPoints.find(m => m.id === route.params.id));
+        return { point, icons };
+      },
+      template: `
+        <div v-if="point" class="article-detail">
+          <router-link to="/map" class="back-arrow" v-html="icons.arrowLeft"></router-link>
+          <h1>{{ point.title }}</h1>
+          <p>{{ point.desc }}</p>
+        </div>
+        <div v-else>Точка не найдена.</div>
       `
     });
 
@@ -364,7 +702,6 @@
         <div v-if="doc" class="document-detail">
           <h1>{{ doc.title }}</h1><p><strong>Дата:</strong> {{ doc.date }}</p>
           <div class="proof-adaptation-text">{{ doc.adaptation_text }}</div>
-          <div v-if="doc.original_text" class="proof-original-text">{{ doc.original_text }}</div>
           <img :src="doc.scan_url" class="proof-scan" style="max-height:600px;" @click="window.open(doc.scan_url)" />
           <div class="proof-code">{{ doc.code }}</div>
           <a :href="doc.pdf_url" class="proof-pdf-btn" download>Скачать PDF</a>
@@ -377,12 +714,19 @@
       { path:'/', component:FeedPage },
       { path:'/articles', component:ArticleListPage },
       { path:'/article/:id', component:ArticleDetailPage },
+      { path:'/map', component:MapPage },
+      { path:'/map/:id', component:MapPointDetailPage },
       { path:'/timeline', component:TimelinePage },
       { path:'/search', component:SearchPage },
       { path:'/document/:id', component:DocumentPage }
     ];
 
-    const router = createRouter({ history: createWebHashHistory(), routes, scrollBehavior(to){ if(to.hash) return {el:to.hash, behavior:'smooth'}; return {top:0}; } });
+    const router = createRouter({
+      history: createWebHashHistory(),
+      routes,
+      scrollBehavior(to) { if (to.hash) return { el: to.hash, behavior: 'smooth' }; return { top: 0 }; }
+    });
+
     const app = createApp(AppLayout);
     app.component('QuickSearch', QuickSearch);
     app.component('ProofBlock', ProofBlock);
